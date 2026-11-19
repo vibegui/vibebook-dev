@@ -2,7 +2,7 @@
 // and every app/API path pointing to https://chat.decocms.com. No storage, no login.
 const TO = "https://chat.decocms.com";
 
-type Env = { ASSETS: Fetcher };
+type Env = { ASSETS: Fetcher; OLD: Fetcher };
 
 const isEn = (req: Request) => {
   const c = /(?:^|;\s*)vb_lang=(pt|en)/.exec(req.headers.get("cookie") ?? "")?.[1];
@@ -63,6 +63,8 @@ export default {
     const p = url.pathname;
     const en = p === "/en" || p.startsWith("/en/") ? true : p === "/pt" || p.startsWith("/pt/") ? false : isEn(req);
     if (p === "/") return Response.redirect(`${url.origin}/${en ? "en" : "pt"}`, 302);
+    // Until the last copy to deco.chat is done, its export (token-guarded, in the old app Worker) stays reachable here.
+    if (p.startsWith("/migrate/")) return env.OLD.fetch(req);
     const room = /^\/b\/([A-Za-z0-9_-]+)\/?$/.exec(p);
     if (room) return Response.redirect(`${TO}/b/${room[1]}${url.search}`, 302);
     if (p === "/mcp" || p === "/authorize" || /^\/(api|oauth|ws|ws-me|yjs)(\/|$)/.test(p)) return gone();
