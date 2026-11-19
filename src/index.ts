@@ -67,11 +67,16 @@ export default {
     if (p.startsWith("/migrate/")) return env.OLD.fetch(req);
     const room = /^\/b\/([A-Za-z0-9_-]+)\/?$/.exec(p);
     if (room) return Response.redirect(`${TO}/b/${room[1]}${url.search}`, 302);
+    // Old links to a room's files, icon or someone's avatar: the same file on deco.chat (the files were copied 1:1).
+    if (req.method === "GET" && /^\/api\/(books\/[A-Za-z0-9_-]+\/(files\/[A-Za-z0-9_-]+|icon)|avatar\/[^/]+)$/.test(p))
+      return Response.redirect(`${TO}${p}${url.search}`, 302);
     if (p === "/mcp" || p === "/authorize" || /^\/(api|oauth|ws|ws-me|yjs)(\/|$)/.test(p)) return gone();
     if (p === "/llms.txt") return new Response(`# vibebook is now deco.chat\n\nRead ${TO}/llms.txt and set it up from there.\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
     if (p === "/install.sh" || p === "/setup.sh") return new Response(`#!/bin/sh\necho "vibebook moved to deco.chat: curl -fsSL ${TO}/install.sh | sh" >&2\nexit 1\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
     if (p === "/cli.mjs") return new Response(`console.error("vibebook moved to deco.chat: curl -fsSL ${TO}/install.sh | sh"); process.exit(1);\n`, { headers: { "content-type": "text/javascript; charset=utf-8" } });
-    if (p === "/app" || p.startsWith("/app/") || p === "/login" || p === "/archived" || p.startsWith("/auth/") || p === "/settings") return withBanner(movedPage(en), en);
+    // The app's own pages open the same page on deco.chat (/b/<id> above keeps the room and thread).
+    if (p === "/app" || p.startsWith("/app/") || p === "/archived" || p === "/settings") return Response.redirect(`${TO}${p}${url.search}`, 302);
+    if (p === "/login" || p.startsWith("/auth/")) return withBanner(movedPage(en), en);
     const res = await env.ASSETS.fetch(req);
     if (res.status === 404 && (req.headers.get("accept") ?? "").includes("text/html")) return withBanner(movedPage(en, 404), en);
     return withBanner(res, en);
