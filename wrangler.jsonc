@@ -1,8 +1,10 @@
 {
-  "name": "vibebook",
+  // Its own Worker: the old app Worker "vibebook" keeps its Durable Objects (the data written after the copy) untouched.
+  "name": "vibebook-dev",
   "main": "src/index.ts",
   "compatibility_date": "2026-11-01",
   // Parking site: every request goes through the worker so HTML pages get the "now deco.chat" banner.
   "assets": { "directory": "public", "binding": "ASSETS", "run_worker_first": true },
+  "routes": [{ "pattern": "vibebook.dev", "custom_domain": true }],
   "observability": { "enabled": true }
 }
