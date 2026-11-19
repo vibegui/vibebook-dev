@@ -30,6 +30,10 @@ function withBanner(res: Response, en: boolean) {
   return new HTMLRewriter()
     .on("head", { element: (e) => e.append(BANNER_CSS, { html: true }) })
     .on("body", { element: (e) => e.prepend(banner(en), { html: true }) })
+    // The app's buttons (Criar meu primeiro vibebook, Entrar, connect) go straight to deco.chat.
+    .on('a[href^="/app"], a[href^="/login"], a[href="/pt/connect"], a[href="/en/connect"]', {
+      element: (e) => e.setAttribute("href", TO),
+    })
     .transform(res);
 }
 
