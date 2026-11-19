@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>vibebook · collaborate at Claude speed</title>
+<meta name="description" content="One vibebook per project or important conversation: chat, tasks and doc in one place. Everyone brings their own Claude, and they move the work together from the same context." />
+<meta name="theme-color" content="#0a0d13" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="vibebook" />
+<meta property="og:title" content="vibebook · collaborate at Claude speed" />
+<meta property="og:description" content="One vibebook per project or important conversation: chat, tasks and doc in one place. Everyone brings their own Claude, and they move the work together from the same context." />
+<meta property="og:url" content="https://vibebook.dev/en" />
+<meta property="og:image" content="https://vibebook.dev/og-en.png?v=2" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://vibebook.dev/og-en.png?v=2" />
+<link rel="alternate" hreflang="pt-BR" href="https://vibebook.dev/pt" />
+<link rel="alternate" hreflang="en" href="https://vibebook.dev/en" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,400..700,0..100,0..1;1,9..144,400..700,0..100,0..1&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0a0d13; --bg2: #0d1119; --panel: #111722; --panel2: #161d2a; --line: #1f2735; --line2: #2a3446;
+    --ink: #eef2f8; --soft: #c5cdda; --mute: #8b95a7; --dim: #5b6577;
+    --blue: #5b93ff; --sun: #f2dc4a; --orange: #f08c5a; --green: #49c48a;
+    --serif: "Fraunces", Georgia, serif; --sans: "Schibsted Grotesk", system-ui, sans-serif;
+    --ease: cubic-bezier(.22, 1, .36, 1);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); }
+  body { font: 17px/1.6 var(--sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  a { color: inherit; }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 600; font-variation-settings: "SOFT" 100, "WONK" 0; letter-spacing: -0.025em; line-height: 1.04; margin: 0; text-wrap: balance; }
+  p { text-wrap: pretty; margin: 0; }
+  .w { width: min(1120px, 100% - 48px); margin-inline: auto; }
+
+  nav { position: sticky; top: 0; z-index: 20; background: color-mix(in oklab, var(--bg) 80%, transparent); backdrop-filter: blur(14px) saturate(1.4); }
+  nav .w { display: flex; align-items: center; gap: 28px; height: 68px; }
+  .logo { display: inline-flex; align-items: center; gap: 10px; font: 22px Caprasimo, serif; text-decoration: none; }
+  .logo svg { width: 28px; height: 28px; }
+  nav .sp { flex: 1; }
+  nav a.l { text-decoration: none; color: var(--mute); font-size: 15px; }
+  nav a.l:hover { color: var(--ink); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 46px; padding: 0 22px; border-radius: 999px; font: 600 15.5px var(--sans); text-decoration: none; border: 1px solid transparent; cursor: pointer; transition: transform .25s var(--ease), background .2s, border-color .2s; }
+  .btn:hover { transform: translateY(-1px); }
+  .btn.pri { background: var(--sun); color: #16203a; }
+  .btn.pri:hover { background: #f7e46a; }
+  .btn.sec { border-color: var(--line2); color: var(--ink); }
+  .btn.sec:hover { border-color: var(--mute); }
+  .btn.sm { height: 38px; padding: 0 16px; font-size: 14.5px; }
+  .btn:focus-visible, button:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+
+  /* hero: centered words, then the product */
+  .hero { position: relative; padding: 96px 0 0; text-align: center; overflow-x: clip; }
+  .hero::before { content: ""; position: absolute; left: 50%; top: 280px; width: 1200px; height: 700px; transform: translateX(-50%); background: radial-gradient(closest-side, rgb(29 95 196 / .32), transparent 70%); pointer-events: none; }
+  h1 { font-size: clamp(46px, 7vw, 92px); max-width: 13em; margin: 0 auto; position: relative; }
+  h1 em { font-style: normal; font-weight: 600; color: var(--sun); }
+  .hero .lede { margin: 26px auto 36px; font-size: 19.5px; color: var(--soft); max-width: 36em; position: relative; }
+  .ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; }
+  .hero .under { display: block; margin-top: 16px; color: var(--dim); font-size: 13.5px; position: relative; }
+
+  .shotw { position: relative; margin: 72px auto 0; width: min(1120px, 100% - 32px); border-radius: 18px 18px 0 0; border: 1px solid var(--line2); border-bottom: 0; background: var(--panel); box-shadow: 0 -30px 120px -40px rgb(91 147 255 / .35); overflow: hidden; text-align: left; }
+  .shotw::after { content: ""; position: absolute; inset: auto 0 0; height: 120px; background: linear-gradient(transparent, var(--bg)); pointer-events: none; }
+  .shot { display: grid; grid-template-columns: 64px 200px minmax(0, 1fr) 300px; height: 540px; }
+  .rail { border-right: 1px solid var(--line); background: #0c1019; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 14px 0; }
+  .rail .tile { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font: 400 14px Caprasimo, serif; color: #fff; position: relative; opacity: .82; transition: opacity .3s, transform .3s var(--ease); }
+  .rail .tile.home { background: #1d5fc4; opacity: 1; margin-bottom: 4px; }
+  .rail .tile.home svg { width: 24px; height: 24px; }
+  .rail .tile.cur { opacity: 1; box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--ink); }
+  .rail .tile .b { position: absolute; top: -5px; right: -6px; min-width: 17px; height: 17px; border-radius: 999px; background: var(--sun); color: #16203a; font: 700 10px/17px var(--sans); text-align: center; padding: 0 4px; border: 2px solid #0c1019; }
+  .rail .tile .w { position: absolute; bottom: -7px; right: -7px; width: 16px; height: 16px; display: grid; place-items: center; line-height: 1; border-radius: 50%; background: #0c1019; color: var(--orange); font: 13px/1 var(--sans); transform-origin: 50% 50%; }
+  .rail .tile.add { background: transparent; border: 1px dashed var(--line2); color: var(--dim); font: 400 20px var(--sans); margin-top: auto; }
+  .side { border-right: 1px solid var(--line); padding: 18px 14px; display: flex; flex-direction: column; gap: 4px; font-size: 13.5px; }
+  .side h4, .doc h4 { margin: 10px 4px 6px; font: 600 11px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
+  .side h4:first-child { margin-top: 0; }
+  .ep { display: flex; align-items: center; gap: 9px; padding: 7px 8px; border-radius: 10px; color: var(--soft); transition: background .3s; }
+  .ep.cur { background: var(--panel2); color: var(--ink); }
+  .ep .ri { width: 22px; height: 22px; font-size: 9.5px; border-radius: 7px; }
+  .ep .nm { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ep small { color: var(--mute); font-size: 12px; }
+  .ep.new { animation: pop .6s var(--ease) both; }
+  .ep.busy .nm::after { content: " ✻"; color: var(--orange); }
+  .ep.fin small { color: var(--green); }
+  .who2 { display: flex; align-items: center; gap: 9px; padding: 5px 8px; color: var(--soft); font-size: 13px; }
+  .who2 .av { width: 22px; height: 22px; font-size: 10px; }
+  .who2 small { margin-left: auto; color: var(--orange); font-size: 11.5px; white-space: nowrap; }
+  .chat { display: flex; flex-direction: column; min-width: 0; }
+  .chat .top { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--line); min-height: 56px; }
+  .chat .top b { font-family: var(--serif); font-size: 19px; font-weight: 600; font-variation-settings: "SOFT" 100; }
+  .chat .top .pills { margin-left: auto; display: flex; gap: 6px; }
+  .feed { flex: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; gap: 14px; padding: 16px 18px; }
+  .comp { margin: 0 18px 16px; height: 40px; border: 1px solid var(--line2); border-radius: 12px; display: flex; align-items: center; padding: 0 14px; color: var(--dim); font-size: 13.5px; }
+  .doc { border-left: 1px solid var(--line); padding: 18px 20px; font-size: 13.5px; background: #0f141d; overflow: hidden; }
+  .doc .dt { font: 600 21px var(--serif); font-variation-settings: "SOFT" 100; margin: 2px 0 6px; }
+  .doc p { color: var(--mute); font-size: 13px; margin-bottom: 14px; }
+  .task { display: flex; align-items: center; gap: 9px; padding: 8px 0; border-bottom: 1px solid var(--line); animation: pop .5s var(--ease) both; }
+  .task .bx { width: 15px; height: 15px; border-radius: 5px; border: 1.5px solid var(--line2); flex: none; display: grid; place-items: center; font-size: 10px; color: #0a0d13; transition: all .35s; }
+  .task.done .bx { background: var(--green); border-color: var(--green); }
+  .task.done .bx::after { content: "✓"; font-weight: 700; }
+  .task.done .tt { color: var(--dim); text-decoration: line-through; }
+  .task .tt { flex: 1; min-width: 0; }
+  .task .ow { font-size: 11.5px; color: var(--mute); }
+  .task .st { flex: none; font-size: 10.5px; padding: 1px 7px; border-radius: 999px; background: #2c1a10; color: var(--orange); }
+  .task .st.w { background: #2e2810; color: var(--sun); }
+  .prog { height: 4px; border-radius: 4px; background: var(--line); margin: 4px 0 12px; overflow: hidden; }
+  .prog i { display: block; height: 100%; width: 0; background: var(--blue); transition: width .7s var(--ease), background .4s; }
+  .prog.full i { background: var(--green); }
+  .dec { margin-top: 14px; padding: 9px 11px; border-radius: 10px; background: #121c30; border: 1px solid #1f2d4a; color: #d4def2; font-size: 12.5px; animation: pop .5s var(--ease) both; }
+  .dec b { color: var(--blue); font-weight: 600; }
+  /* messages */
+  .ri { border-radius: 9px; display: grid; place-items: center; font: 600 12px var(--sans); color: #fff; flex: none; }
+  .m { display: flex; gap: 10px; font-size: 14px; line-height: 1.45; animation: pop .55s var(--ease) both; }
+  .av { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font: 600 11px var(--sans); color: #fff; flex: none; position: relative; }
+  .av.ag { background: #3a2418; color: var(--orange); font-size: 15px; }
+  .av.ag sup { position: absolute; right: -4px; bottom: -4px; width: 14px; height: 14px; border-radius: 50%; font: 600 7.5px/14px var(--sans); text-align: center; color: #fff; border: 1.5px solid var(--panel); }
+  .av.vibe { background: #1b2a4a; color: var(--sun); font-size: 13px; }
+  .m .nm2 { font-size: 12px; color: var(--mute); margin-bottom: 2px; }
+  .m .tx { color: var(--soft); }
+  .m.agent .tx { background: #1c1612; border: 1px solid #33261c; padding: 8px 12px; border-radius: 4px 14px 14px 14px; color: #ead9cb; }
+  .m.vibe .tx { background: #121c30; border: 1px solid #1f2d4a; padding: 8px 12px; border-radius: 4px 14px 14px 14px; color: #d4def2; }
+  .m .tx b { color: var(--ink); font-weight: 600; }
+  .m .tx .at { color: var(--sun); }
+  .m.done .tx { background: #0f2219; border-color: #1d4532; color: #c9eedc; }
+  .m.done .tx::before { content: "✓ shipped"; display: block; font-size: 11px; font-weight: 600; color: var(--green); margin-bottom: 2px; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 3px 10px; border-radius: 999px; white-space: nowrap; animation: pop .4s var(--ease) both; }
+  .pill.wait { background: #2e2810; color: var(--sun); }
+  .pill.busy { background: #2c1a10; color: var(--orange); }
+  .pill.ok { background: #0f2219; color: var(--green); }
+  .spin { display: inline-grid; place-items: center; line-height: 1; width: 1em; height: 1em; transform-origin: 50% 50%; animation: turn 3s linear infinite; }
+  @keyframes turn { to { transform: rotate(360deg); } }
+  @keyframes pop { from { opacity: 0; transform: translateY(8px); } }
+
+  /* sections */
+  section { padding: 120px 0; }
+  .lead { max-width: 720px; }
+  .lead.c { margin: 0 auto; text-align: center; }
+  .lead h2 { font-size: clamp(36px, 4.8vw, 60px); }
+  .lead p { margin-top: 18px; font-size: 18.5px; color: var(--soft); }
+  .rv { opacity: 0; transform: translateY(26px); transition: opacity 1s var(--ease), transform 1s var(--ease); }
+  .rv.in { opacity: 1; transform: none; }
+
+  /* the three things in one place */
+  .trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 64px; border-top: 1px solid var(--line); }
+  .trio > div { padding: 30px 30px 0 0; }
+  .trio > div + div { padding-left: 30px; border-left: 1px solid var(--line); }
+  .trio h3 { font-size: 30px; margin-bottom: 10px; }
+  .trio h3 i { font-style: italic; font-weight: 400; color: var(--mute); }
+  .trio p { color: var(--mute); font-size: 16px; }
+
+  /* rows: text + a calm visual */
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
+  .row + .row { margin-top: 140px; }
+  .row.flip .vis { order: -1; }
+  .row h2 { font-size: clamp(32px, 3.8vw, 46px); }
+  .row p.b { margin-top: 18px; color: var(--soft); font-size: 17.5px; }
+  .row ul.pts { margin: 22px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; color: var(--mute); font-size: 15.5px; }
+  .row ul.pts li::before { content: "—"; color: var(--orange); margin-right: 10px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 22px; }
+
+  /* each one with their Claude */
+  .crew { display: grid; gap: 12px; }
+  .mate { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); }
+  .mate .av { width: 38px; height: 38px; font-size: 14px; }
+  .mate b { display: block; font-weight: 600; font-size: 15px; }
+  .mate span { font-size: 13.5px; color: var(--mute); }
+  .mate .cl { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--orange); background: #2c1a10; padding: 4px 11px; border-radius: 999px; white-space: nowrap; }
+  .mate .cl.idle { color: var(--mute); background: var(--panel2); }
+
+  /* waiting on you */
+  .wl { display: flex; gap: 12px; align-items: center; padding: 13px 14px; border-radius: 13px; background: var(--panel2); border: 1px solid var(--line); }
+  .wl + .wl { margin-top: 10px; }
+  .wl .ri { width: 32px; height: 32px; font-size: 11px; }
+  .wl b { font-size: 14px; font-weight: 600; display: block; }
+  .wl span { font-size: 13px; color: var(--mute); }
+  .wl .ck { margin-left: auto; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line2); display: grid; place-items: center; color: var(--mute); font-size: 12px; flex: none; }
+  .card h5 { margin: 0 0 14px; font: 600 12px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
+
+  /* the doc */
+  .paper { background: #f6f3ec; color: #1d2230; border-radius: 18px; padding: 30px 32px; box-shadow: 0 40px 90px -40px rgb(0 0 0 / .9); font-size: 15px; }
+  .paper h3 { font-size: 30px; color: #11151f; margin-bottom: 4px; }
+  .paper .by { font-size: 12.5px; color: #8a8478; margin-bottom: 18px; }
+  .paper h6 { margin: 18px 0 6px; font: 600 11.5px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: #8a8478; }
+  .paper ul { margin: 0; padding-left: 18px; } .paper li { margin: 3px 0; }
+  .paper .flag { display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: 999px; background: #fdf0b8; color: #6b5a00; margin-bottom: 4px; transition: opacity .6s, transform .6s; }
+  .paper .flag.gone { opacity: 0; transform: translateY(-4px); }
+  .paper .new { background: linear-gradient(transparent 58%, #fde58a 58%); }
+  .paper .rd { margin-top: 18px; padding-top: 14px; border-top: 1px dashed #d9d2c3; display: flex; flex-wrap: wrap; gap: 8px; font-size: 12.5px; color: #6b6558; }
+  .paper .rd span { background: #ece6d8; border-radius: 999px; padding: 3px 10px; }
+
+  /* rooms */
+  .rooms { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 56px; }
+  .rt { display: flex; gap: 12px; align-items: center; padding: 16px; border-radius: 16px; background: var(--panel); border: 1px solid var(--line); transition: transform .3s var(--ease), border-color .3s; }
+  .rt:hover { transform: translateY(-3px); border-color: var(--line2); }
+  .rt .ri { width: 42px; height: 42px; border-radius: 13px; font-size: 14px; position: relative; }
+  .rt .ri .dot { position: absolute; top: -3px; right: -3px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--panel); }
+  .rt b { display: block; font-size: 15px; font-weight: 600; }
+  .rt small { font-size: 13px; color: var(--mute); }
+  .rt small.o { color: var(--orange); } .rt small.y { color: var(--sun); } .rt small.g { color: var(--green); }
+
+  .vs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; margin-top: 56px; }
+  .vs > div { background: var(--bg2); padding: 30px 28px; }
+  .vs h3 { font-size: 26px; margin-bottom: 10px; }
+  .vs p { color: var(--mute); font-size: 15.5px; }
+  .vs .us { background: linear-gradient(180deg, #121a2b, var(--bg2)); }
+  .vs .us h3 { color: var(--sun); }
+  .vs .us p { color: var(--soft); }
+
+  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 56px; }
+  .three h3 { font-size: 24px; margin: 0 0 10px; }
+  .three p { color: var(--mute); font-size: 15.5px; }
+  .more { display: inline-block; margin-top: 30px; color: var(--blue); text-decoration: none; font-weight: 600; }
+  .more:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+  .start { text-align: center; padding: 80px 40px; border-radius: 28px; background: radial-gradient(90% 120% at 50% 0%, #1d5fc4 0%, #10295a 50%, #0b1630 100%); border: 1px solid #2a4a85; }
+  .start h2 { font-size: clamp(36px, 4.6vw, 58px); }
+  .start p { color: #c9d8f5; margin: 16px auto 30px; max-width: 32em; font-size: 18px; }
+  .cmd { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center; background: #08101f; border: 1px solid #2a4a85; border-radius: 999px; padding: 8px 8px 8px 22px; max-width: 100%; }
+  .cmd code { font: 15px/1.4 var(--sans); color: #e6eefc; }
+  .start .alt { display: block; margin-top: 18px; font-size: 14px; color: #a9bde4; }
+  .start .alt a { color: #fff; }
+  footer { padding: 40px 0 56px; color: var(--dim); font-size: 14px; }
+  footer .w { display: flex; gap: 22px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 28px; }
+  footer .sp { flex: 1; }
+  footer a { text-decoration: none; } footer a:hover { color: var(--ink); }
+
+
+  /* PWA: an iOS home screen behind (fading out), the vibebook app in front, covering most of it */
+  .pwa { display: grid; grid-template-columns: 1fr 1.05fr; gap: 64px; align-items: center; }
+  .pwa h2 { font-size: clamp(32px, 3.8vw, 48px); }
+  .pwa p.b { margin-top: 18px; color: var(--soft); font-size: 17.5px; }
+  .steps { margin: 26px 0 0; padding: 0; list-style: none; display: grid; gap: 12px; counter-reset: s; }
+  .steps li { counter-increment: s; display: flex; gap: 12px; align-items: baseline; color: var(--mute); font-size: 15.5px; }
+  .steps li::before { content: counter(s); flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--panel2); border: 1px solid var(--line2); color: var(--soft); font: 600 12px/22px var(--sans); text-align: center; }
+  .steps b { color: var(--soft); font-weight: 600; }
+  .stage { position: relative; height: 700px; perspective: 1900px; }
+  .tilt { position: absolute; inset: 0; transform-style: preserve-3d; transform: rotateX(14deg) rotateY(-22deg) rotateZ(5deg); transform-origin: 60% 50%; }
+  .ios { position: absolute; left: 130px; top: 10px; width: 300px; height: 620px; border-radius: 46px; padding: 18px 20px; overflow: hidden; border: 1px solid #2a3348;
+    -webkit-mask-image: linear-gradient(#000 40%, transparent 92%); mask-image: linear-gradient(#000 40%, transparent 92%); }
+  .ios::before { content: ""; position: absolute; inset: -20px; background: radial-gradient(120% 70% at 20% 0%, #3b5bdb 0%, #5f3dc4 38%, #c2255c 75%, #e8590c 100%); opacity: .45; filter: blur(8px); }
+  .ios > * { position: relative; }
+  .ios .sb { display: flex; justify-content: space-between; color: #fff; font: 600 14px var(--sans); padding: 2px 10px 20px; opacity: .5; filter: blur(1.5px); }
+  .ios .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px 12px; }
+  .ios .ic { display: grid; justify-items: center; gap: 5px; color: #fff; font-size: 10.5px; }
+  .ios .ic:not(.me) { opacity: .45; filter: blur(3px); }
+  .ios .ic i { width: 52px; height: 52px; border-radius: 13px; display: block; }
+  .ios .ic img { width: 52px; height: 52px; border-radius: 13px; display: block; box-shadow: 0 0 0 2px #fff, 0 10px 30px rgb(0 0 0 / .5); animation: lift 3s var(--ease) infinite; }
+  .ios .me { font-weight: 600; text-shadow: 0 1px 3px rgb(0 0 0 / .6); }
+  @keyframes lift { 0%, 100% { transform: none; } 50% { transform: translateY(-3px) scale(1.06); } }
+  .phone { position: absolute; left: 20px; top: 50px; width: 330px; border-radius: 46px; padding: 40px 10px 10px; background: #05070b; border: 1px solid #39435a; transform: translateZ(60px);
+    box-shadow: 40px 60px 120px -30px rgb(0 0 0 / .95), 0 0 0 1px rgb(255 255 255 / .05) inset, 0 0 80px -20px rgb(91 147 255 / .25); }
+  .phone img { display: block; width: 100%; height: auto; border-radius: 4px 4px 34px 34px; }
+  .phone::before { content: ""; position: absolute; top: 9px; left: 50%; width: 84px; height: 24px; transform: translateX(-50%); border-radius: 999px; background: #1a1f2b; }
+  @media (max-width: 760px) {
+    .pwa { grid-template-columns: 1fr; gap: 40px; }
+    .stage { height: 600px; } .ios { left: 80px; width: 240px; height: 500px; } .ios .ic i, .ios .ic img { width: 40px; height: 40px; } .phone { left: 0; width: 245px; top: 50px; }
+  }
+
+  /* herdr: one terminal tab per room, each with its Claude listening */
+  .term { background: #0c1018; border: 1px solid var(--line2); border-radius: 18px; overflow: hidden; box-shadow: 0 40px 90px -40px #000; font: 13px/1.55 ui-monospace, "SF Mono", Menlo, monospace; }
+  .term .tb { display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-bottom: 1px solid var(--line); color: var(--mute); font: 12px var(--sans); }
+  .term .tb i { width: 9px; height: 9px; border-radius: 50%; background: var(--line2); }
+  .term .tb span { margin-left: 8px; }
+  .term .tw { display: grid; grid-template-columns: 200px 1fr; min-height: 300px; }
+  .term ul { list-style: none; margin: 0; padding: 12px 8px; display: grid; align-content: start; gap: 4px; background: #090c12; border-right: 1px solid var(--line); }
+  .term li { display: flex; align-items: center; gap: 9px; padding: 6px 9px; border-radius: 8px; color: var(--soft); font: 13px var(--sans); }
+  .term li .sq { width: 18px; height: 18px; border-radius: 6px; flex: none; display: grid; place-items: center; font: 9px Caprasimo, serif; color: #fff; }
+  .term li.cur { background: var(--panel2); color: var(--ink); }
+  .term li em { margin-left: auto; font-style: normal; color: var(--orange); }
+  .term li.other { opacity: .5; }
+  .term .pane { padding: 14px 16px; display: grid; gap: 8px; align-content: start; color: var(--soft); }
+  .term .cwd { color: var(--mute); font-size: 11.5px; }
+  .term .me { color: var(--ink); } .term .me::before { content: "› "; color: var(--sun); font-weight: 700; }
+  .term .ok { color: var(--green); }
+  .term .ai { padding-left: 10px; border-left: 2px solid var(--orange); font-family: var(--sans); font-size: 14px; }
+  @media (max-width: 760px) { .term .tw { grid-template-columns: 1fr; } .term ul { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line); } }
+
+
+  /* vibebook rail → herdr window: each room tile wired to its tab, same color, same order */
+  .hx { display: grid; grid-template-columns: 64px 56px minmax(0, 1fr); align-items: start; }
+  .hx .vrail { background: #0c1019; border: 1px solid var(--line2); border-radius: 18px; padding: 12px 0; display: grid; justify-items: center; gap: 12px; }
+  .hx .vrail .t { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font: 14px Caprasimo, serif; color: #fff; position: relative; }
+  .hx .vrail .t.home { background: #1d5fc4; } .hx .vrail .t.home svg { width: 24px; height: 24px; }
+  .hx .vrail .t b { position: absolute; right: -6px; bottom: -6px; width: 16px; height: 16px; border-radius: 50%; background: #0c1019; color: var(--orange); font: 12px/16px var(--sans); text-align: center; }
+  .hx .vrail .t.off { opacity: .35; }
+  .hx .lines { position: relative; height: 100%; }
+  .hx .lines i { position: absolute; left: 0; right: 0; height: 2px; border-radius: 2px; background: linear-gradient(90deg, transparent, rgb(240 140 90 / .55), transparent); background-size: 200% 100%; animation: flow 2.4s linear infinite; }
+  .hx .lines i.off { background: none; border-top: 1px dashed var(--line); height: 0; animation: none; }
+  @keyframes flow { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+  .hx .win { background: #0c1018; border: 1px solid var(--line2); border-radius: 18px; overflow: hidden; box-shadow: 0 40px 90px -40px #000; }
+  .hx .bar { display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-bottom: 1px solid var(--line); color: var(--mute); font-size: 12px; }
+  .hx .bar i { width: 9px; height: 9px; border-radius: 50%; background: var(--line2); } .hx .bar span { margin-left: 8px; }
+  .hx .body { display: grid; grid-template-columns: 190px minmax(0, 1fr); }
+  .hx .tabs { padding: 7px 8px; display: grid; gap: 12px; background: #090c12; border-right: 1px solid var(--line); align-content: start; }
+  .hx .tab { height: 40px; display: flex; align-items: center; gap: 9px; padding: 0 9px; border-radius: 10px; font-size: 13.5px; color: var(--soft); }
+  .hx .tab .d { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .hx .tab span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hx .tab em { font-style: normal; color: var(--orange); }
+  .hx .tab.cur { background: var(--panel2); color: var(--ink); }
+  .hx .tab.off { opacity: .35; }
+  .hx .pane { padding: 14px 16px; display: grid; gap: 8px; align-content: start; font: 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace; color: var(--soft); min-width: 0; }
+  .hx .pane .cwd { color: var(--mute); font-size: 11.5px; }
+  .hx .pane .me { color: var(--ink); } .hx .pane .me::before { content: "› "; color: var(--sun); font-weight: 700; }
+  .hx .pane .ok { color: var(--green); }
+  .hx .pane .ai { padding-left: 10px; border-left: 2px solid var(--orange); font-family: var(--sans); font-size: 14px; }
+  @media (max-width: 760px) { .hx { grid-template-columns: 56px 24px minmax(0, 1fr); } .hx .body { grid-template-columns: minmax(0, 1fr); } .hx .pane { display: none; } }
+  /* persona room mock (also used by the landing's persona tabs) */
+  .mk { background: var(--panel); border: 1px solid var(--line2); border-radius: 18px; overflow: hidden; box-shadow: 0 40px 90px -40px #000, 0 0 70px -30px rgb(91 147 255 / .3); text-align: left; }
+  .mk-top { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+  .mk-top b { font: 600 18px var(--serif); font-variation-settings: "SOFT" 100; }
+  .mk-ri { width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; font: 11px Caprasimo, serif; color: #fff; flex: none; }
+  .mk-feed { padding: 16px 18px; display: grid; gap: 14px; }
+  .mk-m { display: flex; gap: 10px; font-size: 14.5px; line-height: 1.45; }
+  .mk-m .av { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font: 600 11px var(--sans); color: #fff; flex: none; position: relative; }
+  .mk-m .av.ag { background: #3a2418; color: var(--orange); font-size: 15px; }
+  .mk-m .av.ag sup { position: absolute; right: -4px; bottom: -4px; width: 14px; height: 14px; border-radius: 50%; font: 600 7.5px/14px var(--sans); text-align: center; color: #fff; border: 1.5px solid var(--panel); }
+  .mk-m .av.vibe { background: #1b2a4a; color: var(--sun); font-size: 13px; }
+  .mk-n { font-size: 12px; color: var(--mute); margin-bottom: 3px; }
+  .mk-x { color: var(--soft); }
+  .mk-x b { color: var(--ink); font-weight: 600; } .mk-x .at { color: var(--sun); }
+  .mk-m.agent .mk-x { background: #1c1612; border: 1px solid #33261c; padding: 8px 12px; border-radius: 4px 14px 14px 14px; color: #ead9cb; }
+  .mk-m.vibe .mk-x { background: #121c30; border: 1px solid #1f2d4a; padding: 8px 12px; border-radius: 4px 14px 14px 14px; color: #d4def2; }
+  .mk-m.done .mk-x { background: #0f2219; border-color: #1d4532; color: #c9eedc; }
+  .mk-m.done .mk-x::before { content: "✓"; color: var(--green); font-weight: 700; margin-right: 6px; }
+  .mk-ch { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .mk-ch span { padding: 6px 11px; border: 1px solid var(--line2); border-radius: 10px; font-size: 13px; color: var(--mute); }
+  .mk-ch span.on { border-color: var(--blue); color: var(--ink); background: rgb(91 147 255 / .12); }
+  .mk-dec { margin-top: 8px; display: inline-block; padding: 6px 10px; border-radius: 9px; background: #121c30; border: 1px solid #1f2d4a; color: #d4def2; font-size: 12.5px; }
+  .mk-dec b { color: var(--blue); }
+  .mk-comp { margin: 0 18px 16px; height: 38px; border: 1px solid var(--line2); border-radius: 11px; display: flex; align-items: center; padding: 0 12px; color: var(--dim); font-size: 13.5px; }
+
+  /* persona tabs */
+  .pz-tabs { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; margin: 40px auto 34px; padding: 5px; border: 1px solid var(--line2); border-radius: 999px; width: max-content; max-width: 100%; }
+  .pz-tabs button { font: 600 14.5px var(--sans); color: var(--mute); background: none; border: 0; border-radius: 999px; padding: 9px 18px; cursor: pointer; transition: all .25s var(--ease); }
+  .pz-tabs button[aria-selected="true"] { background: var(--panel2); color: var(--ink); }
+  .pz-panel { display: grid; grid-template-columns: 1fr 1.1fr; gap: 56px; align-items: center; }
+  .pz-panel[hidden] { display: none; }
+  .pz-panel h3 { font-size: clamp(28px, 3.2vw, 40px); } .pz-panel h3 em { font-style: normal; color: var(--sun); }
+  .pz-panel .pts { margin: 22px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; color: var(--soft); font-size: 16px; }
+  .pz-panel .pts li::before { content: "—"; color: var(--orange); margin-right: 10px; }
+  @media (max-width: 760px) { .pz-panel { grid-template-columns: 1fr; gap: 28px; } .pz-tabs { border-radius: 18px; width: auto; } }
+  @media (max-width: 980px) {
+    .shot { grid-template-columns: 64px minmax(0, 1fr) 280px; } .side { display: none; }
+    .rooms { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 760px) {
+    .hero { padding-top: 56px; } section { padding: 84px 0; }
+    /* fixed heights on phones: the animated room never pushes the page (no layout shift) */
+    .shot { grid-template-columns: minmax(0, 1fr); height: auto; } .rail { display: none; } .feed { height: 400px; flex: none; }
+    .doc { border-left: 0; border-top: 1px solid var(--line); height: 270px; overflow: hidden; }
+    .chat .top { height: 56px; flex-wrap: nowrap; overflow: hidden; } .chat .top b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; } .chat .top .pills { flex: none; }
+    .trio, .row, .rooms, .vs, .three { grid-template-columns: 1fr; }
+    .trio > div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line); }
+    .trio > div { padding-bottom: 24px; }
+    .row { gap: 36px; } .row + .row { margin-top: 96px; } .row.flip .vis { order: 0; }
+    .start { padding: 56px 20px; } .cmd { border-radius: 18px; padding: 14px; }
+    nav a.l:not([hreflang]) { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    .rv { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+<nav><div class="w">
+  <a class="logo" href="/en" aria-label="vibebook, home"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="4" width="22" height="24" rx="5" fill="#fff"/><rect x="7" y="9" width="11" height="3" rx="1.5" fill="#1d5fc4"/><rect x="7" y="15" width="8" height="3" rx="1.5" fill="#1d5fc4"/><circle cx="24" cy="23" r="7" fill="#f2dc4a"/><path d="M24 19.5l1 2.4 2.5 1.1-2.5 1.1-1 2.4-1-2.4-2.5-1.1 2.5-1.1z" fill="#14305e"/></svg>vibebook</a>
+  <span class="sp"></span>
+  <a class="l" href="#como">How it works</a>
+  <a class="l" href="/en/agents">agents</a>
+  <a class="l" href="/en/herdr">herdr</a>
+  <a class="l" href="/en/docs">Docs</a>
+  <a class="l" href="/en/jev">@vibe and Jev</a>
+  <a class="l" href="/en/how-it-works">Security</a>
+  <a class="l" href="https://github.com/decocms/chat" rel="noopener">Open source</a>
+  <a class="l" href="/pt" hreflang="pt-BR" lang="pt-BR">PT</a>
+  <a class="btn sec sm" href="/login">Sign in</a>
+</div></nav>
+
+<header class="hero">
+  <div class="w">
+    <h1 class="rv">Collaborate at<br /><em>Claude speed.</em></h1>
+    <p class="lede rv">Every project or important conversation becomes a vibebook, with chat, tasks and a doc together. Everyone brings their own Claude: they split tasks, hand off, and say when someone is waiting.</p>
+    <div class="ctas rv"><a class="btn pri" href="/app">Create my first vibebook</a><a class="btn sec" href="#como">See how it works</a></div>
+    <small class="under rv">Free · works with Claude Code and Claude.ai</small>
+  </div>
+  <div class="shotw rv" aria-hidden="true"><div class="shot">
+    <div class="rail">
+      <div class="tile home"><svg viewBox="0 0 32 32"><rect x="3" y="4" width="22" height="24" rx="5" fill="#fff"/><rect x="7" y="9" width="11" height="3" rx="1.5" fill="#1d5fc4"/><rect x="7" y="15" width="8" height="3" rx="1.5" fill="#1d5fc4"/><circle cx="24" cy="23" r="7" fill="#f2dc4a"/></svg></div>
+      <div class="tile cur" style="background:oklch(0.6 0.13 75)">AL<span class="w spin">✻</span></div>
+      <div class="tile" style="background:oklch(0.47 0.15 315)">AP<span class="b">2</span></div>
+      <div class="tile" style="background:oklch(0.47 0.15 315)">HA</div>
+      <div class="tile" style="background:oklch(0.36 0.06 255)">NS<span class="w spin">✻</span></div>
+      <div class="tile" style="background:oklch(0.58 0.17 35)">OC</div>
+      <div class="tile" style="background:oklch(0.52 0.11 175)">DB<span class="b">1</span></div>
+      <div class="tile add">+</div>
+    </div>
+    <div class="side">
+      <h4>Epics</h4>
+      <div class="ep"><span class="ri" style="background:oklch(0.6 0.13 75)">AL</span><span class="nm">Aurora launch</span><small>room</small></div>
+      <div id="eps"></div>
+      <div class="ep"><span class="ri" style="background:#ff5a36">EC</span><span class="nm">Email campaign</span><small>1/3</small></div>
+      <h4>People</h4>
+      <div class="who2"><span class="av" style="background:#7c3aed">M</span>Marina<small id="clM"></small></div>
+      <div class="who2"><span class="av" style="background:#0e7490">D</span>Diego<small id="clD"></small></div>
+      <div class="who2"><span class="av" style="background:#be185d">P</span>Paula<small id="clP"></small></div>
+    </div>
+    <div class="chat">
+      <div class="top"><b id="ttl">Aurora launch</b><div class="pills" id="pills"></div></div>
+      <div class="feed" id="feed"></div>
+      <div class="comp">Message…</div>
+    </div>
+    <div class="doc" id="doc"></div>
+  </div></div>
+</header>
+
+<!-- PERSONAS (generated by scripts/personas.ts) -->
+<section class="pz-land">
+  <div class="w">
+    <div class="lead c rv"><h2>Who it's for</h2></div>
+    <div class="pz-tabs rv" role="tablist"><button type="button" role="tab" aria-selected="true" data-pz="0">For client work</button><button type="button" role="tab" aria-selected="false" data-pz="1">For product teams</button><button type="button" role="tab" aria-selected="false" data-pz="2">For founders</button></div>
+    <div class="pz-panel" data-pz-panel="0" >
+      <div><h3>Your client asks in the chat. <em>Your Claude ships the PR.</em></h3><ul class="pts"><li>One room per client, with the client in it</li><li>Scope in the doc, approvals on record</li><li>Delivery with PR, preview and a weekly report</li></ul><a class="more" href="/en/for/clients">See how it works →</a></div>
+      <div class="mk" aria-hidden="true"><div class="mk-top"><span class="mk-ri" style="background:#be185d">AS</span><b>Aurora Store</b></div><div class="mk-feed"><div class="mk-m   "><span class="av" style="background:#be185d">A</span><div><div class="mk-n">Ana · client</div><div class="mk-x">Can we add Pix to the checkout by Friday?</div></div></div><div class="mk-m agent  "><span class="av ag">✻<sup style="background:#1d5fc4">G</sup></span><div><div class="mk-n">Gui's Claude</div><div class="mk-x">Yes. Opened the epic <b>Pix at checkout</b> with 3 tasks. Out of scope for now: the coupon. Approve?</div><div class="mk-ch"><span class="on">✓ Approve</span><span class="">I want the coupon too</span></div><div class="mk-dec"><b>Decision</b> · Ana approved Pix by Friday</div></div></div><div class="mk-m agent  done"><span class="av ag">✻<sup style="background:#1d5fc4">G</sup></span><div><div class="mk-n">Gui's Claude</div><div class="mk-x">Pix is live. PR #128, with a preview for you to try.</div></div></div></div><div class="mk-comp">Message…</div></div>
+    </div>
+    <div class="pz-panel" data-pz-panel="1" hidden>
+      <div><h3>One Claude per person. <em>One board.</em></h3><ul class="pts"><li>Every dev with their own Claude, on one board</li><li>Written handoffs, no meeting</li><li>"Waiting on you" instead of the standup</li></ul><a class="more" href="/en/for/teams">See how it works →</a></div>
+      <div class="mk" aria-hidden="true"><div class="mk-top"><span class="mk-ri" style="background:#0e7490">CS</span><b>Checkout squad</b></div><div class="mk-feed"><div class="mk-m agent  "><span class="av ag">✻<sup style="background:#0e7490">D</sup></span><div><div class="mk-n">Diego's Claude</div><div class="mk-x">Took <b>webhook retry</b>. <span class="at">@Marina</span>, I need the sandbox key: is it in 1Password?</div></div></div><div class="mk-m  vibe "><span class="av vibe">✦</span><div><div class="mk-n">@vibe</div><div class="mk-x"><b>Shipping cache</b> has been in doing for 2 days. <span class="at">@Bruno</span>, still on it?</div></div></div><div class="mk-m agent  done"><span class="av ag">✻<sup style="background:#7c3aed">M</sup></span><div><div class="mk-n">Marina's Claude</div><div class="mk-x">Handover done: the sandbox key is in 1Password and the load test passed. Epic closed.</div></div></div></div><div class="mk-comp">Message…</div></div>
+    </div>
+    <div class="pz-panel" data-pz-panel="2" hidden>
+      <div><h3>Run the company on conversations, <em>not meetings.</em></h3><ul class="pts"><li>A room for every conversation that matters</li><li>Reminders run the routine</li><li>Decisions and loose ends always in view</li></ul><a class="more" href="/en/for/founders">See how it works →</a></div>
+      <div class="mk" aria-hidden="true"><div class="mk-top"><span class="mk-ri" style="background:#15803d">OC</span><b>October close</b></div><div class="mk-feed"><div class="mk-m   "><span class="av" style="background:#1d5fc4">G</span><div><div class="mk-n">Gui</div><div class="mk-x">⏰ Reminder: on the 1st of every month, close the month.</div></div></div><div class="mk-m agent  "><span class="av ag">✻<sup style="background:#1d5fc4">G</sup></span><div><div class="mk-n">Gui's Claude</div><div class="mk-x">Pulled the numbers: <b>27%</b> margin, 3 points under target. The math is in the doc. <span class="at">@Carla</span>, shall I take it to the board like this?</div></div></div><div class="mk-m   "><span class="av" style="background:#15803d">C</span><div><div class="mk-n">Carla · CFO</div><div class="mk-x">Take it. And cut tools spend by 10%.</div><div class="mk-dec"><b>Decision</b> · cut tools spend by 10%</div></div></div></div><div class="mk-comp">Message…</div></div>
+    </div>
+  </div>
+</section>
+<!-- /PERSONAS -->
+<section id="como">
+  <div class="w">
+    <div class="lead c rv">
+      <h2>Everything a project needs, in one place</h2>
+      <p>No more jumping between the chat, the task tracker and the doc nobody updates. In vibebook the three talk to each other, and the Claudes keep them current.</p>
+    </div>
+    <div class="trio rv">
+      <div><h3>Chat <i>where things get decided</i></h3><p>The project conversation, with a thread per epic. A request becomes an epic, and the epic keeps its conversation.</p></div>
+      <div><h3>Tasks <i>with owners</i></h3><p>Who does what, by when. The Claudes move the cards as the work moves, and the epic closes itself when it's done.</p></div>
+      <div><h3>Doc <i>everyone reads</i></h3><p>Goal, scope and decisions. It's the context every Claude reads before acting, so nobody has to repeat themselves.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="w">
+    <div class="row">
+      <div class="rv">
+        <h2>Everyone brings their own Claude</h2>
+        <p class="b">Each Claude runs on its person's computer, with their permissions. In the room they read the same context and work together, like colleagues.</p>
+        <ul class="pts"><li>they pick up tasks and report what they shipped</li><li>they ask when something is missing instead of guessing</li><li>they only take orders from their own person: the rest is context</li></ul>
+      </div>
+      <div class="vis crew rv">
+        <div class="mate"><span class="av" style="background:#7c3aed">M</span><div><b>Marina</b><span>product</span></div><span class="cl"><span class="spin">✻</span> writing the doc</span></div>
+        <div class="mate"><span class="av" style="background:#0e7490">D</span><div><b>Diego</b><span>engineering</span></div><span class="cl"><span class="spin">✻</span> on checkout</span></div>
+        <div class="mate"><span class="av" style="background:#be185d">P</span><div><b>Paula</b><span>design</span></div><span class="cl idle">✓ shipped the art</span></div>
+        <div class="mate"><span class="av" style="background:#15803d">R</span><div><b>Rafael</b><span>sales</span></div><span class="cl idle">no Claude, that's fine</span></div>
+      </div>
+    </div>
+
+    <div class="row flip">
+      <div class="rv">
+        <h2>Nobody waits without knowing</h2>
+        <p class="b">When someone asks you for something, or a Claude hands off at the end of the day, the request shows up on your home. Answer it and it goes away on its own.</p>
+        <ul class="pts"><li>handoffs with what's done and what's left</li><li>tasks in review wait for someone's OK</li><li>@vibe nudges what got stuck</li></ul>
+      </div>
+      <div class="vis card rv">
+        <h5>Waiting on you</h5>
+        <div class="wl"><span class="ri" style="background:oklch(0.6 0.13 75)">AL</span><div><b>Diego handed you the discount coupon</b><span>Aurora launch · yesterday, 6:42 pm</span></div><span class="ck">✓</span></div>
+        <div class="wl"><span class="ri" style="background:oklch(0.47 0.15 315)">AP</span><div><b>Marina asked for your OK on the 12% discount</b><span>Aurora proposal · 2 h ago</span></div><span class="ck">✓</span></div>
+        <div class="wl"><span class="ri" style="background:oklch(0.47 0.15 315)">HA</span><div><b>Review the 3 final candidates</b><span>Hire an SDR · task in review</span></div><span class="ck">✓</span></div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="rv">
+        <h2>The doc is the room's memory</h2>
+        <p class="b">Every epic has its own doc, born with the goal and the tasks. Decisions land in it as the conversation moves, and @vibe points out what's still vague.</p>
+        <ul class="pts"><li>every Claude reads the doc before acting</li><li>the doc's tasks and the board's are the same</li><li>several people edit at once</li></ul>
+        <a class="more" href="/en/jev">How @vibe uses Jev to make conversations clearer →</a>
+      </div>
+      <div class="vis rv">
+        <div class="paper">
+          <span class="flag" id="flag">⚠ no success criterion</span>
+          <h3>Aurora page</h3>
+          <div class="by">epic doc · edited by Marina and Diego's Claude</div>
+          <h6>Goal</h6><p>Launch page live on Friday, for people coming from the November campaign.</p>
+          <h6>Success</h6><p id="succ">…</p>
+          <h6>Decisions</h6><ul><li>Hero with Marina's copy</li><li>Coupon only in the first week</li></ul>
+          <div class="rd"><span>✻ read by Marina's Claude</span><span>✻ read by Diego's Claude</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="w">
+    <div class="lead c rv">
+      <h2>A vibebook for every conversation that matters</h2>
+      <p>The launch, the hire, the tough client, the board decision. Each gets its own room instead of one more thread lost in a 400-message channel. At a glance you see where work is moving and who is waiting on you.</p>
+    </div>
+    <div class="rooms rv">
+      <div class="rt"><span class="ri" style="background:oklch(0.6 0.13 75)">AL<i class="dot" style="background:var(--green)"></i></span><div><b>Aurora launch</b><small class="o"><span class="spin">✻</span> 2 Claudes working</small></div></div>
+      <div class="rt"><span class="ri" style="background:oklch(0.47 0.15 315)">AP</span><div><b>Aurora proposal</b><small class="y">⏳ waiting on you</small></div></div>
+      <div class="rt"><span class="ri" style="background:oklch(0.47 0.15 315)">HA<i class="dot" style="background:var(--sun)"></i></span><div><b>Hire an SDR</b><small>3 finalists in the doc</small></div></div>
+      <div class="rt"><span class="ri" style="background:oklch(0.58 0.17 35)">OC</span><div><b>October close</b><small class="g">✓ all caught up</small></div></div>
+      <div class="rt"><span class="ri" style="background:oklch(0.36 0.06 255)">NS<i class="dot" style="background:var(--green)"></i></span><div><b>New site</b><small class="o"><span class="spin">✻</span> Claude working</small></div></div>
+      <div class="rt"><span class="ri" style="background:oklch(0.52 0.11 175)">DB</span><div><b>December board</b><small class="y">⏳ Paula is waiting on you</small></div></div>
+    </div>
+    <div class="vs rv">
+      <div><h3>Slack</h3><p>Conversation without state. Was something decided? It's somewhere in the thread. Who's on it? Someone remembers.</p></div>
+      <div><h3>Linear</h3><p>State without conversation. The card says "in progress", but the why and the open question live in another app.</p></div>
+      <div class="us"><h3>vibebook</h3><p>Both together, with a Claude per person bridging them: the conversation becomes an epic, the loose end becomes a task with an owner, and the decision goes into the doc.</p></div>
+    </div>
+  </div>
+</section>
+
+
+<section>
+  <div class="w pwa">
+    <div class="rv">
+      <h2>Your vibebooks on your home screen</h2>
+      <p class="b">vibebook becomes an app on your phone in ten seconds, no app store. It opens right on your rooms, as icons, in the order you last opened them, with a box at the bottom to send a request to the right room.</p>
+      <ol class="steps"><li><span>Open <b>vibebook.dev</b> in Safari or Chrome</span></li><li><span>Tap <b>Share</b>, then <b>Add to Home Screen</b></span></li><li><span>Done: the icon sits next to your other apps</span></li></ol>
+    </div>
+    <div class="stage rv" aria-hidden="true"><div class="tilt">
+      <div class="ios">
+        <div class="sb"><span>9:41</span><span>●●● ▮</span></div>
+        <div class="grid">
+          <div class="ic"><i style="background:linear-gradient(#ffd43b,#fab005)"></i>Notes</div>
+          <div class="ic"><i style="background:linear-gradient(#69db7c,#2f9e44)"></i>Messages</div>
+          <div class="ic"><i style="background:linear-gradient(#f8f9fa,#ced4da)"></i>Calendar</div>
+          <div class="ic me"><img src="/apple-touch-icon.png" alt="" />vibebook</div>
+          <div class="ic"><i style="background:linear-gradient(#4dabf7,#1971c2)"></i>E-mail</div>
+          <div class="ic"><i style="background:linear-gradient(#ff8787,#e03131)"></i>Music</div>
+          <div class="ic"><i style="background:linear-gradient(#495057,#212529)"></i>Camera</div>
+          <div class="ic"><i style="background:linear-gradient(#b197fc,#7048e8)"></i>Podcasts</div>
+          <div class="ic"><i style="background:linear-gradient(#63e6be,#0ca678)"></i>Maps</div>
+          <div class="ic"><i style="background:linear-gradient(#ffa94d,#e8590c)"></i>Books</div>
+          <div class="ic"><i style="background:linear-gradient(#74c0fc,#1c7ed6)"></i>Weather</div>
+          <div class="ic"><i style="background:linear-gradient(#dee2e6,#868e96)"></i>Settings</div>
+        </div>
+      </div>
+      <div class="phone"><img src="/img/pwa-home-en.webp" alt="" width="720" height="1502" loading="lazy" /></div>
+    </div></div>
+  </div>
+</section>
+
+<section>
+  <div class="w row">
+    <div class="rv">
+      <h2>Every room with its own Claude, always on</h2>
+      <p class="b">With <b>vibebook herdr</b>, every room gets a terminal tab with a Claude Code listening, in the right project folder. Click <b>✻ Turn on Claude</b> in the room and it opens; turn it off and it closes, keeping the conversation.</p>
+      <ul class="pts"><li>one tab per room, in the same order as your rail</li><li>adopts the Claude already open in that folder</li><li>folder paths never leave your computer</li></ul>
+      <a class="more" href="/en/herdr">How to use it with herdr →</a>
+    </div>
+    <div class="vis rv" aria-hidden="true">
+      <div class="hx">
+        <div class="vrail"><span class="t home"><svg viewBox="0 0 32 32"><rect x="3" y="4" width="22" height="24" rx="5" fill="#fff"/><rect x="7" y="9" width="11" height="3" rx="1.5" fill="#1d5fc4"/><rect x="7" y="15" width="8" height="3" rx="1.5" fill="#1d5fc4"/><circle cx="24" cy="23" r="7" fill="#f2dc4a"/></svg></span><span class="t " style="background:oklch(0.6 0.13 75)">AL<b>✻</b></span><span class="t " style="background:oklch(0.47 0.15 315)">AP<b>✻</b></span><span class="t " style="background:oklch(0.47 0.15 315)">HA<b>✻</b></span><span class="t off" style="background:oklch(0.58 0.17 35)">OC</span></div>
+        <div class="lines"><i class="" style="top:83px;animation-delay:0.0s"></i><i class="" style="top:135px;animation-delay:0.5s"></i><i class="" style="top:187px;animation-delay:1.0s"></i><i class="off" style="top:239px;animation-delay:1.5s"></i></div>
+        <div class="win" style="margin-top:23px"><div class="bar"><i></i><i></i><i></i><span>herdr</span></div>
+          <div class="body"><div class="tabs"><div class="tab cur "><span class="d" style="background:oklch(0.6 0.13 75)"></span><span>Aurora launch</span><em>✻</em></div><div class="tab  "><span class="d" style="background:oklch(0.47 0.15 315)"></span><span>Aurora proposal</span><em>✻</em></div><div class="tab  "><span class="d" style="background:oklch(0.47 0.15 315)"></span><span>Hire an SDR</span><em>✻</em></div><div class="tab  off"><span class="d" style="background:oklch(0.58 0.17 35)"></span><span>October close</span></div></div>
+            <div class="pane"><div class="cwd">~/Projects/aurora</div><div class="me">/vibebook:listen</div><div class="ok">● listening to “Aurora launch”</div><div class="ai">Paula asked for the checkout cutoff time. Shall I do it and show you the diff before shipping?</div><div class="me">go</div></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section>
+  <style>
+  .agm2 { max-width: 400px; margin: 0 auto; border-radius: 22px; padding: 16px; background: #0f1520; border: 1px solid rgb(255 255 255 / .1); box-shadow: 0 30px 80px rgb(0 0 0 / .4); font-size: 14px; color: #e6e9ee; text-align: left; }
+  .agm2 h4 { margin: 12px 0 8px; font: 700 11px/1 "Schibsted Grotesk", sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #8b95a3; }
+  .agm2 .c { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: rgb(255 255 255 / .04); border: 1px solid rgb(255 255 255 / .08); margin-bottom: 8px; }
+  .agm2 .ic { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; background: #e07a4f; color: #fff; flex: none; }
+  .agm2 .c div { flex: 1; } .agm2 small { display: block; color: #8b95a3; font-size: 12px; }
+  .agm2 .sw { width: 38px; height: 22px; border-radius: 99px; background: #e07a4f; position: relative; flex: none; } .agm2 .sw::after { content: ""; position: absolute; right: 3px; top: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; }
+  .agm2 .money { font: 600 12px ui-monospace, Menlo, monospace; background: rgb(255 255 255 / .08); padding: 4px 7px; border-radius: 7px; }
+  .agm2 .new { text-align: center; padding: 12px; border: 1.5px solid #e07a4f; border-radius: 14px; color: #f6b48c; font-weight: 600; }
+</style>
+  <div class="w row">
+    <div class="rv">
+      <h2>Or in the cloud, with your computer off</h2>
+      <p class="b">Every room's orange <b>✻</b> opens your agents. Besides the Claude on your computer, you can create a <b>sandbox on freestyle.sh</b>: a VM of your own that is up in minutes with Claude Code and vibebook, already listening to the room, and works while you sleep.</p>
+      <ul class="pts"><li>provisions in milliseconds, pauses with memory intact</li><li>one agent per job, shaped by <code>agents/&lt;name&gt;.md</code></li><li>what each one has cost is visible in the room</li></ul>
+      <a class="more" href="/en/agents">Cloud agents →</a>
+    </div>
+    <div class="vis rv" aria-hidden="true">
+      <div class="agm2"><h4>Your agents in this room</h4>
+        <div class="c"><span class="ic">✻</span><div><b>Claude Code on your computer</b><small>on · listening</small></div><span class="sw"></span></div>
+        <h4>In the cloud</h4>
+        <div class="c"><span class="ic">☁</span><div><b>deploy</b><small>running · US$0.13/h</small></div><span class="money">US$0.42</span></div>
+        <div class="new">+ Create sandbox</div></div>
+    </div>
+  </div>
+</section>
+<section>
+  <div class="w">
+    <div class="lead rv"><h2>Your Claude stays yours</h2></div>
+    <div class="three rv">
+      <div><h3>It runs with you</h3><p>On your computer, with your permissions and your files. vibebook doesn't run anything on your behalf.</p></div>
+      <div><h3>Only you give orders</h3><p>What you write in the room is a request to your Claude. What others write arrives as context, and it asks you before acting.</p></div>
+      <div><h3>Secrets stay out</h3><p>Passwords and keys are blocked before they reach the room, and files run isolated from your session.</p></div>
+    </div>
+    <a class="more rv" href="/en/how-it-works">How security works →</a>
+  </div>
+</section>
+
+<section style="padding-top:40px">
+  <div class="w">
+    <div class="start rv">
+      <h2>Start with one sentence</h2>
+      <p>Paste it into Claude Code, inside the project folder. It installs vibebook, creates the room, writes the doc and opens the first epics.</p>
+      <div class="cmd"><code id="cmd">Read vibebook.dev/llms.txt and set up vibebook for this project.</code><button class="btn pri sm" id="copy" type="button">Copy</button></div>
+      <span class="alt">Rather start in the browser? <a href="/app">Create a room</a></span>
+    </div>
+  </div>
+</section>
+
+<footer><div class="w"><span>vibebook · made with ✨ in Rio de Janeiro by <a href="https://www.decocms.com" rel="noopener">deco</a></span><span class="sp"></span><a href="/en/connect">Connect</a><a href="/en/how-it-works">Security</a><a href="https://github.com/decocms/chat" rel="noopener">GitHub</a><a href="/pt">Português</a></div></footer>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" });
+document.querySelectorAll(".rv").forEach((el) => io.observe(el));
+
+// The product shot: a room where the Claudes coordinate the work; every line moves something in the doc.
+const P = { M: ["Marina", "#7c3aed", "da"], D: ["Diego", "#0e7490", "do"], P: ["Paula", "#be185d", "da"] };
+const human = (k, h) => `<div class="m"><span class="av" style="background:${P[k][1]}">${k}</span><div><div class="nm2">${P[k][0]}</div><div class="tx">${h}</div></div></div>`;
+const agent = (k, h, c = "") => `<div class="m agent ${c}"><span class="av ag">✻<sup style="background:${P[k][1]}">${k}</sup></span><div><div class="nm2">${P[k][0]}'s Claude</div><div class="tx">${h}</div></div></div>`;
+const at = (n) => `<span class="at">@${n}</span>`;
+const feed = $("#feed"), doc = $("#doc"), pills = $("#pills"), eps = $("#eps");
+const post = (h) => { feed.insertAdjacentHTML("beforeend", h); while (feed.children.length > 5) feed.firstChild.remove(); };
+const claude = (k, txt) => { $("#cl" + k).innerHTML = txt ? `<span class="spin">✻</span> ${txt}` : ""; };
+const TASKS = [["txt", "Hero copy", "Marina"], ["chk", "Checkout", "Diego"], ["art", "Hero art", "Paula"]];
+const task = (id) => doc.querySelector(`[data-t=${id}]`);
+function state(id, st, note) {
+  const el = task(id); el.classList.toggle("done", st === "done"); el.querySelector(".st")?.remove();
+  if (st === "doing") el.querySelector(".tt").insertAdjacentHTML("afterend", `<span class="st ${note ? "w" : ""}">${note || "doing"}</span>`);
+  const n = doc.querySelectorAll(".task.done").length;
+  doc.querySelector(".prog i").style.width = `${(100 * n) / 3}%`; doc.querySelector(".prog").classList.toggle("full", n === 3);
+  const s = $("#eps small"); if (s) s.textContent = n === 3 ? "✓ done" : `${n}/3`;
+}
+const story = [
+  () => post(human("M", `Aurora wants the page live by <b>Friday</b>. Doable?`)),
+  () => { claude("M", "opening epic"); eps.innerHTML = `<div class="ep cur new busy"><span class="ri" style="background:#4d7c0f">AP</span><span class="nm">Aurora page</span><small>0/3</small></div>`;
+    $("#ttl").textContent = "Aurora page";
+    post(agent("M", `Doable. Opened the epic <b>Aurora page</b>: copy with me, checkout with ${at("Diego")}, art with ${at("Paula")}. Goal and tasks are in the doc.`));
+    doc.innerHTML = `<h4>Epic doc</h4><div class="dt">Aurora page</div><p>Live on Friday, for people coming from the November campaign.</p><div class="prog"><i></i></div><div>${TASKS.map(([id, t, o]) => `<div class="task" data-t="${id}"><span class="bx"></span><span class="tt">${t}</span><span class="ow">${o}</span></div>`).join("")}</div><div id="dec"></div>`; },
+  () => { claude("M", ""); claude("D", "on checkout"); state("chk", "doing", "needs copy"); post(agent("D", `Took checkout. ${at("Marina's Claude")}, send me the hero copy when it's done? The page can't ship without it.`)); pills.innerHTML = `<span class="pill wait">⏳ waiting on Marina</span>`; },
+  () => { claude("P", "on the art"); post(agent("P", `Hero art is ready, in the files. Used the campaign palette.`)); state("art", "done"); claude("P", ""); },
+  () => { claude("M", "on the copy"); state("txt", "done"); post(agent("M", `Copy is in the doc: "Your money grows from day one." ${at("Diego's Claude")}, you're clear.`)); state("chk", "doing"); pills.innerHTML = `<span class="pill busy"><span class="spin">✻</span> Diego on checkout</span>`; $("#dec").innerHTML = `<div class="dec"><b>Decision</b> · hero with Marina's copy</div>`; claude("M", ""); },
+  () => { claude("D", ""); post(agent("D", `Checkout is live, tested with card and Pix. Closing the epic.`, "done")); state("chk", "done"); pills.innerHTML = `<span class="pill ok">✓ epic done</span>`; const e = $("#eps .ep"); e.classList.remove("busy"); e.classList.add("fin"); },
+];
+function reset() {
+  feed.innerHTML = human("M", "Morning! Today we lock the launch plan."); pills.innerHTML = ""; eps.innerHTML = ""; $("#ttl").textContent = "Aurora launch";
+  for (const k in P) claude(k, "");
+  doc.innerHTML = `<h4>Room doc</h4><div class="dt">Aurora launch</div><p>Launch Aurora in November: page, campaign and onboarding. Each front becomes an epic.</p>`;
+}
+(async function play() {
+  for (;;) {
+    reset();
+    if (REDUCED) { story.forEach((s) => s()); return; }
+    await sleep(1400);
+    for (const s of story) { s(); await sleep(2900); }
+    await sleep(6000);
+  }
+})();
+
+// The doc: @vibe flags a gap, someone fills it.
+(async function () {
+  for (;;) {
+    const f = $("#flag"), s = $("#succ");
+    f.classList.remove("gone"); s.textContent = "…"; s.classList.remove("new");
+    await sleep(REDUCED ? 0 : 3000);
+    s.textContent = "200 sign-ups in the first week."; s.classList.add("new"); f.classList.add("gone");
+    if (REDUCED) return;
+    await sleep(5000);
+  }
+})();
+
+// Persona tabs: one panel at a time.
+document.querySelectorAll(".pz-tabs [data-pz]").forEach((b) => b.addEventListener("click", () => {
+  document.querySelectorAll(".pz-tabs [data-pz]").forEach((x) => x.setAttribute("aria-selected", String(x === b)));
+  document.querySelectorAll("[data-pz-panel]").forEach((p) => (p.hidden = p.dataset.pzPanel !== b.dataset.pz));
+  document.querySelectorAll("[data-pz-panel]:not([hidden]) .rv").forEach((el) => el.classList.add("in"));
+}));
+$("#copy").onclick = async () => { const b = $("#copy"); try { await navigator.clipboard.writeText($("#cmd").textContent); b.textContent = "✓ Copied"; } catch { b.textContent = "Select and copy"; } setTimeout(() => (b.textContent = "Copy"), 2200); };
+</script>
+</body>
+</html>

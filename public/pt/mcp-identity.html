@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Identidade assinada: como seu MCP sabe quem chama</title>
+<meta name="description" content="Toda chamada do vibebook a um servidor MCP leva X-Vibebook-Identity, um JWT EdDSA de 5 minutos. Como funciona, como verificar com segurança e um prompt pronto pro seu Claude." />
+<link rel="canonical" href="https://vibebook.dev/pt/mcp-identity" />
+<link rel="alternate" hreflang="pt-BR" href="https://vibebook.dev/pt/mcp-identity" />
+<link rel="alternate" hreflang="en" href="https://vibebook.dev/en/mcp-identity" />
+<meta name="theme-color" content="#0a0d13" />
+<meta property="og:title" content="Identidade assinada: como seu MCP sabe quem chama" />
+<meta property="og:description" content="Toda chamada do vibebook a um servidor MCP leva X-Vibebook-Identity, um JWT EdDSA de 5 minutos. Como funciona, como verificar com segurança e um prompt pronto pro seu Claude." />
+<meta property="og:image" content="https://vibebook.dev/og.png" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Caprasimo&family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..700,0..100,0..1&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/site.css" />
+</head>
+<body>
+<nav><div class="w">
+  <a class="logo" href="/pt" aria-label="vibebook"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="4" width="22" height="24" rx="5" fill="#fff"/><rect x="7" y="9" width="11" height="3" rx="1.5" fill="#1d5fc4"/><rect x="7" y="15" width="8" height="3" rx="1.5" fill="#1d5fc4"/><circle cx="24" cy="23" r="7" fill="#f2dc4a"/><path d="M24 19.5l1 2.4 2.5 1.1-2.5 1.1-1 2.4-1-2.4-2.5-1.1 2.5-1.1z" fill="#1d5fc4"/></svg></a>
+  <span class="sp"></span>
+  <a class="l" href="/pt">Início</a>
+  <a class="l" href="/pt/docs">Docs</a>
+  <a class="l" href="/pt/how-it-works">Segurança</a>
+  <a class="l" href="/en/mcp-identity" hreflang="en" lang="en">EN</a>
+  <a class="btn sm" href="/app">Entrar</a>
+</div></nav>
+<header class="top"><div class="w">
+  <h1>Seu MCP sabe quem chama.<br /><em>Sem ninguém colar token.</em></h1>
+  <p class="lede">Quando uma sala do vibebook se liga ao seu servidor MCP (aba <b>Apps</b> ou <code>connect_mcp</code>), cada chamada diz quem está olhando e de qual sala, assinada pelo vibebook. Seu servidor confere a assinatura e decide o que essa pessoa pode fazer.</p>
+</div></header>
+
+<main><div class="w">
+
+  <section>
+    <h2>Como funciona</h2>
+    <p>Toda requisição do vibebook ao seu MCP, inclusive o <code>initialize</code>, traz o header <code>X-Vibebook-Identity</code>: um JWT assinado em EdDSA (Ed25519), válido por 5 minutos.</p>
+    <table class="claims"><tr><th><code>iss</code></th><td><code>https://vibebook.dev</code></td></tr><tr><th><code>sub</code>, <code>email</code></th><td>o email de quem está olhando (ou de quem é o Claude que chamou)</td></tr><tr><th><code>room</code></th><td>o id da sala de onde veio a chamada</td></tr><tr><th><code>aud</code></th><td>a URL do seu MCP exatamente como foi conectada no vibebook</td></tr><tr><th><code>iat</code>, <code>exp</code></th><td>emitido agora, vence em 5 minutos</td></tr><tr><th><code>jti</code></th><td>id aleatório de cada token</td></tr><tr><th>header</th><td><code>alg: EdDSA</code> e o <code>kid</code> da chave</td></tr></table>
+    <p>A chave pública está em <a href="https://vibebook.dev/.well-known/jwks.json">vibebook.dev/.well-known/jwks.json</a>. A privada nunca sai do vibebook.</p>
+    <p><b>Seu servidor também tem login próprio?</b> Responda 401 com o <code>WWW-Authenticate</code> do MCP. Cada pessoa entra uma vez pela aba Apps, e o vibebook segue o caminho padrão: RFC 9728 (resource metadata) → RFC 8414 (authorization server) → registro dinâmico de cliente → PKCE S256. O vibebook guarda esse acesso selado, por pessoa, e manda <code>Authorization: Bearer</code> junto com a identidade nas chamadas seguintes. Ninguém cola token, e nada disso chega ao navegador, a um iframe ou a um Claude.</p>
+  </section>
+
+  <section>
+    <h2>Como aceitar com segurança</h2>
+    <ul class="list"><li><b>Verifique a assinatura</b> com as chaves da JWKS. Guarde em cache e, pra um <code>kid</code> desconhecido, busque de novo no máximo uma vez por minuto.</li><li><b>Aceite só <code>EdDSA</code></b>; nunca <code>none</code> nem HS*.</li><li><b><code>iss</code></b> igual a <code>https://vibebook.dev</code>, exatamente.</li><li><b><code>aud</code></b> igual à URL do seu próprio MCP, exatamente. Assim um token feito pra outro servidor não serve no seu.</li><li><b><code>exp</code></b> no futuro (até 30 s de folga de relógio).</li><li><b>Depois</b>, mapeie <code>email</code> (e <code>room</code>, se fizer sentido) pras permissões que você já tem. Email desconhecido: 403 ou visão pública.</li><li><b>Sem header válido</b>: 401, ou só o que é público. Nunca confie num email que venha do corpo, de outro header ou de argumento de tool.</li><li><b>Tools que escrevem</b>: guarde os <code>jti</code> vistos até o <code>exp</code> e recuse um repetido.</li></ul>
+    <p>A identidade diz <b>quem</b> é. <b>O que</b> essa pessoa pode fazer, quem decide é o seu servidor.</p>
+    <h3>Em TypeScript, com <code>jose</code></h3>
+    <div class="codebox"><button type="button" class="btn sm copy" data-copy-from="code-ts">Copiar código</button><pre id="code-ts">import { createRemoteJWKSet, jwtVerify } from &quot;jose&quot;;
+
+// vibebook's public keys, cached; an unknown kid refetches at most once a minute.
+const VIBEBOOK_KEYS = createRemoteJWKSet(new URL(&quot;https://vibebook.dev/.well-known/jwks.json&quot;), {
+  cacheMaxAge: 60 * 60 * 1000,
+  cooldownDuration: 60 * 1000,
+});
+
+// MY_URL = this server's MCP URL exactly as it was connected in vibebook (scheme, host and path).
+export async function vibebookIdentity(req: Request, MY_URL: string) {
+  const token = req.headers.get(&quot;x-vibebook-identity&quot;);
+  if (!token) return null;
+  try {
+    const { payload } = await jwtVerify(token, VIBEBOOK_KEYS, {
+      issuer: &quot;https://vibebook.dev&quot;,
+      audience: MY_URL,
+      algorithms: [&quot;EdDSA&quot;],
+      clockTolerance: 30,
+    });
+    return { email: String(payload.email ?? payload.sub), room: String(payload.room ?? &quot;&quot;) };
+  } catch {
+    return null; // bad signature, wrong iss/aud, expired: not vibebook
+  }
+}</pre></div>
+    <p class="note">Conferido contra tokens de verdade do vibebook: o válido passa; <code>aud</code> errado, <code>iss</code> errado e assinatura alterada falham.</p>
+  </section>
+
+  <section>
+    <h2>Prompt pronto pro seu Claude</h2>
+    <p>Cole no Claude que cuida do código do seu MCP. Ele implementa a verificação e os testes.</p>
+    <div class="codebox"><button type="button" class="btn btn-sun sm copy" data-copy-from="prompt">Copiar</button><pre id="prompt">Quero que este servidor MCP aceite chamadas do vibebook (vibebook.dev) sabendo quem está chamando, sem token colado.
+
+Como o vibebook chama: toda requisição (inclusive o initialize) traz o header X-Vibebook-Identity com um JWT assinado em EdDSA (Ed25519), válido por 5 minutos. Claims: iss = &quot;https://vibebook.dev&quot;; sub e email = o email da pessoa; room = o id da sala; aud = a URL deste MCP exatamente como foi conectada no vibebook; iat, exp, jti. Chaves públicas: https://vibebook.dev/.well-known/jwks.json (o header traz kid).
+
+Faça assim:
+1. Uma função vibebookIdentity(req) que lê o header e verifica com a lib jose: createRemoteJWKSet na URL da JWKS (cache de 1 h, nova busca por kid desconhecido no máximo 1 vez por minuto) e jwtVerify com issuer &quot;https://vibebook.dev&quot;, audience = a URL pública exata deste MCP, algorithms [&quot;EdDSA&quot;], clockTolerance 30 s. Qualquer erro = sem identidade.
+2. Sem identidade válida: responda 401 (ou só a parte pública, se existir). Nunca confie num email que venha do corpo, de outro header ou de argumento de tool.
+3. Com identidade: mapeie email (e, se fizer sentido, room) para as permissões que já existem aqui. Email desconhecido = 403 ou visão pública. A identidade diz quem é; quem decide o que pode é este servidor.
+4. Tools que escrevem: guarde os jti vistos até o exp e recuse um repetido.
+5. Testes: token válido passa; aud de outra URL, iss diferente, assinatura alterada, token expirado e header ausente falham.
+
+Não mude o comportamento pra quem não vem do vibebook.</pre></div>
+  </section>
+
+  <section>
+    <h2>Confira no código</h2>
+    <ul class="list"><li><a href="https://github.com/decocms/chat/blob/main/src/mcpauth.ts" rel="noopener">src/mcpauth.ts</a>: como o token é feito e o login por pessoa.</li><li><a href="https://github.com/decocms/chat/blob/main/src/mcpconn.ts" rel="noopener">src/mcpconn.ts</a>: onde ele vai em cada chamada.</li></ul>
+  </section>
+
+</div></main>
+
+<footer><div class="w"><span>vibebook · feito com ✨ no Rio de Janeiro por <a href="https://www.decocms.com" rel="noopener">deco</a></span><span><a href="https://github.com/decocms/chat" rel="noopener">GitHub</a></span></div></footer>
+<script>
+document.querySelectorAll(".copy").forEach((b) => b.addEventListener("click", () => {
+  navigator.clipboard?.writeText(document.getElementById(b.dataset.copyFrom)?.textContent ?? "");
+  const t = b.textContent; b.textContent = "✓"; setTimeout(() => (b.textContent = t), 1200);
+}));
+</script>
+</body>
+</html>

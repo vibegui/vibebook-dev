@@ -1,0 +1,8 @@
+{
+  "name": "vibebook",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  // Parking site: every request goes through the worker so HTML pages get the "now deco.chat" banner.
+  "assets": { "directory": "public", "binding": "ASSETS", "run_worker_first": true },
+  "observability": { "enabled": true }
+}
